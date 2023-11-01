@@ -1,12 +1,11 @@
-package com.devtides.coroutinesretrofit.view
+package com.devtides.androidcoroutinesretrofit.view
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.devtides.androidcoroutinesretrofit.R
+import com.devtides.androidcoroutinesretrofit.databinding.ItemCountryBinding
 import com.devtides.androidcoroutinesretrofit.model.Country
-import kotlinx.android.synthetic.main.item_country.view.*
+import com.devtides.coroutinesretrofit.view.loadImage
 
 class CountryListAdapter(var countries: ArrayList<Country>): RecyclerView.Adapter<CountryListAdapter.CountryViewHolder>() {
 
@@ -16,9 +15,10 @@ class CountryListAdapter(var countries: ArrayList<Country>): RecyclerView.Adapte
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, p1: Int) = CountryViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_country, parent, false)
-    )
+    override fun onCreateViewHolder(parent: ViewGroup, p1: Int): CountryViewHolder {
+        val binding = ItemCountryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CountryViewHolder(binding)
+    }
 
     override fun getItemCount() = countries.size
 
@@ -26,7 +26,7 @@ class CountryListAdapter(var countries: ArrayList<Country>): RecyclerView.Adapte
         holder.bind(countries[position])
     }
 
-    class CountryViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    class CountryViewHolder(view: ItemCountryBinding): RecyclerView.ViewHolder(view.root) {
 
         private val imageView = view.imageView
         private val countryName = view.name
