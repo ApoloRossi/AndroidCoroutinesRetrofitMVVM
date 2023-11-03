@@ -17,10 +17,9 @@ import kotlin.coroutines.coroutineContext
 
 class ListViewModel(private val service: CoroutinesAPI) : ViewModel() {
 
-    var job: Job?= null
+    var job: Job? = null
 
-    val exceptionHandler = CoroutineExceptionHandler {
-            coroutineContext, throwable ->
+    val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
         onError("Exception handled: ${throwable.localizedMessage}")
     }
 
@@ -35,19 +34,16 @@ class ListViewModel(private val service: CoroutinesAPI) : ViewModel() {
     private fun fetchCountries() {
         loading.value = true
 
-
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val response = service.getCountries()
-
-            withContext(Dispatchers.Main) {
-                if(response.isSuccessful) {
-                    countries.value = response.body()
-                    countryLoadError.value = ""
-                    loading.value = false
-                } else {
-                    onError("Error : ${response.message()} ")
-                }
+            if (response.isSuccessful) {
+                countries.postValue(response.body())
+                countryLoadError.postValue("")
+                loading.postValue(false)
+            } else {
+                onError("Error : ${response.message()} ")
             }
+
         }
     }
 
