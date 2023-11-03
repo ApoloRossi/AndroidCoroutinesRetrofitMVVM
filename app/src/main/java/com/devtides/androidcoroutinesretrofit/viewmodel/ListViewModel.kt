@@ -2,22 +2,14 @@ package com.devtides.androidcoroutinesretrofit.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.devtides.androidcoroutinesretrofit.model.CoroutinesAPI
-import com.devtides.androidcoroutinesretrofit.model.CountriesService
 import com.devtides.androidcoroutinesretrofit.model.Country
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.HttpException
-import kotlin.coroutines.coroutineContext
 
 class ListViewModel(private val service: CoroutinesAPI) : ViewModel() {
-
-    var job: Job? = null
 
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
         onError("Exception handled: ${throwable.localizedMessage}")
@@ -34,7 +26,7 @@ class ListViewModel(private val service: CoroutinesAPI) : ViewModel() {
     private fun fetchCountries() {
         loading.value = true
 
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             val response = service.getCountries()
             if (response.isSuccessful) {
                 countries.postValue(response.body())
@@ -43,7 +35,6 @@ class ListViewModel(private val service: CoroutinesAPI) : ViewModel() {
             } else {
                 onError("Error : ${response.message()} ")
             }
-
         }
     }
 
@@ -51,10 +42,4 @@ class ListViewModel(private val service: CoroutinesAPI) : ViewModel() {
         countryLoadError.value = message
         loading.value = false
     }
-
-    override fun onCleared() {
-        super.onCleared()
-        job?.cancel()
-    }
-
 }
