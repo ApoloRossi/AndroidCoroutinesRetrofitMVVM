@@ -7,7 +7,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.devtides.androidcoroutinesretrofit.databinding.ActivityMainBinding
+import com.devtides.androidcoroutinesretrofit.model.CountriesService
 import com.devtides.androidcoroutinesretrofit.viewmodel.ListViewModel
+import com.devtides.androidcoroutinesretrofit.viewmodel.ListViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,7 +25,10 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        viewModel = ViewModelProviders.of(this).get(ListViewModel::class.java)
+        //viewModel = ViewModelProviders.of(this).get(ListViewModel::class.java)
+        //create a ViewModelProvider for ListViewModel that uses a factory that takes a CountriesService
+        viewModel = ViewModelProviders.of(this, ListViewModelFactory()).get(ListViewModel::class.java)
+
         viewModel.refresh()
 
         binding.countriesList.apply {
@@ -34,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         observeViewModel()
     }
 
-    fun observeViewModel() {
+    private fun observeViewModel() {
         viewModel.countries.observe(this, Observer { countries ->
             countries?.let {
                 binding.countriesList.visibility = View.VISIBLE
